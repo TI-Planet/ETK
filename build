@@ -1,0 +1,4 @@
+#!/bin/bash
+
+./buildtools/build.lua main.lua main.tns
+rm ./big.main.lua
