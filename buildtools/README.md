@@ -62,3 +62,5 @@ Examples are available in the `tests` folder.
 #Usage:
 
 	./build.lua InputLuaFile OutputTNSFile
+
+_Note: You'll need Lua installed on your computer, and [Luna](http://www.unsads.com/projects/nsptools/downloader/download/release/3/file/38) as well if you want the project builder to make a .tns out of the 'compiled' big lua file (otherwise, just copy/paste it into the script editor)_
