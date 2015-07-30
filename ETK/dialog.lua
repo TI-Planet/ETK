@@ -1,3 +1,7 @@
+------------------
+-- Dialog class --
+------------------
+
 do
 	local View = etk.View
 	
@@ -10,7 +14,6 @@ do
 		
 		function Dialog:init(title, position, dimension)
 			self.title = title
-			
 			View.init(self, {position=position, dimension=dimension})
 		end
 		

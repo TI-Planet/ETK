@@ -18,6 +18,7 @@ Enum = function(enumTable)
 	return enumTable
 end
 
+
 -------------
 -- Logging --
 -------------
@@ -63,6 +64,7 @@ do UnitCalculator = {}
         end 
     end
 end
+
 
 -------------------------------------------------
 -- Keep dimensions in a nice to handle wrapper --
@@ -186,6 +188,7 @@ do Position = class()
     
 end
 
+
 -----------
 -- Color --
 -----------
@@ -193,6 +196,7 @@ end
 local function unpackColor(col)
 	return col[1] or 0, col[2] or 0, col[3] or 0
 end
+
 
 -------------------
 -- Event calling --

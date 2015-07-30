@@ -1,5 +1,5 @@
 ----------------------------------
--- ETK 4.0                      --
+-- ETK 4.0 Demo script          --
 --                              --
 -- (C) 2015 Jim Bauwens         --
 -- Licensed under the GNU GPLv3 --
@@ -24,39 +24,6 @@ do
 	local Input = etk.Widgets.Input
 	local Label = etk.Widgets.Label
 	local myView = etk.View()
-	
-	--[[
-	local box1 = Box(
-					Position {
-                        top  = "50px",
-                        left   = "100px"
-                    },
-                    Dimension ("100px", "10%"),
-				   "Hello world")
-	
-	local box2 = Box(
-                   	Position {
-						top  = "50px",
-						left   = "2px",
-						alignment = {
-						  {ref=box1, side=Position.Sides.Right}
-						}
-                    },
-                    Dimension ("50px", "10%"),
-					"Hello!")
-	
-	local box3 = Box(
-				Position {
-					top  = "2px",
-					left = "0",
-					alignment = {
-					  {ref=box2, side=Position.Sides.Bottom},
-					  {ref=box2, side=Position.Sides.Left}
-					}
-				},
-				Dimension ("50px", "20%"),
-				"Yolo")
-				--]]
 	
 	local button1 = Button {
 		position = Position { bottom  = "2px", right = "2px" },

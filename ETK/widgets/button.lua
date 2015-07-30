@@ -1,3 +1,7 @@
+-------------------
+-- Button widget --
+-------------------
+
 do
 	local Widget  = etk.Widget
 	local Widgets = etk.Widgets

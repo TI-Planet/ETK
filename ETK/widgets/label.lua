@@ -1,6 +1,6 @@
------------
--- Label --
------------
+------------------
+-- Label widget --
+------------------
 
 do
 	local Widget  = etk.Widget

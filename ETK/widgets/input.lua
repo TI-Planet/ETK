@@ -1,8 +1,10 @@
+------------------
+-- Input widget --
+------------------
+
 do
 	local Widget  = etk.Widget
 	local Widgets = etk.Widgets
-	
-	
 	
 	do Widgets.Input = class(Widget)
 		local Widget = etk.Widget
@@ -93,7 +95,6 @@ do
 		end
 	
 		function Input:charIn(char)
-			print("wtf")
 			local newValue = self.value .. char
 			
 			if self.number then
