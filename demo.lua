@@ -16,39 +16,44 @@ do
     local myView = etk.View()
     
     local input1 = Input {
-        position = Position { top  = "2px", right = "2px" },
+        position = Position { top="2px", right="2px" },
         value = 1337
     }
     input1.number = true
     input1.dimension.width = Input.defaultStyle.defaultWidth * 2
 
     local input2 = Input {
-        position = Position { top  = "4px", left = "0px", alignment = {{ref=input1, side=Position.Sides.Bottom},{ref=input1, side=Position.Sides.Left}}},
+        position = Position { top="4px", left="0px", alignment={{ref=input1, side=Position.Sides.Bottom},{ref=input1, side=Position.Sides.Left}} },
         value = "this is an input"
     }   
     
     local label1 = Label {
-        position = Position { top  = "2px", right = "10px", alignment = {{ref=input1, side=Position.Sides.Left}}},
+        position = Position { top="2px", right="10px", alignment={{ref=input1, side=Position.Sides.Left}} },
         text = "This is a label"
     }
     
     local label2 = Label {
-        position = Position { top  = "0px", right = "10px", alignment = {{ref=input2, side=Position.Sides.Top},{ref=input2, side=Position.Sides.Left}}},
+        position = Position { top="0px", right="10px", alignment={{ref=input2, side=Position.Sides.Top},{ref=input2, side=Position.Sides.Left}} },
         text = "This is a label"
     }
     label2.limit = true
     label2.dimension = Dimension("30px","20px")
 
-        local button1 = Button {
-        position = Position { bottom  = "2px", right = "2px" },
+    local button1 = Button {
+        position = Position { bottom="2px", right="2px" },
         text = "OK"
     }
     button1.onAction = function ()
-        local dialog = etk.Dialog("Test Dialog", Position {top="40px", left="20px"}, Dimension("-40px", "-80px"))
+        local dialog = etk.Dialog("Test Dialog", Position { top="40px", left="20px" }, Dimension("-40px", "-80px"))
         
-        local nameLabel = Label {position = Position { top="30px", left="4px"}, text="Name: "}
+        local nameLabel = Label {
+            position = Position { top="30px", left="4px" },
+            text = "Name: "
+        }
         
-        local nameInput = Input {position = Position { top="30px", left="50px"}}
+        local nameInput = Input {
+            position = Position { top="30px", left="50px" }
+        }
         nameInput.dimension.width = "-54px"
             
         local closeButton = Button {
@@ -66,7 +71,7 @@ do
     end
     
     local button2 = Button {
-        position = Position { bottom  = "2px", right = "2px", alignment = {{ref=button1, side=Position.Sides.Left}}},
+        position = Position { bottom="2px", right="2px", alignment={{ref=button1, side=Position.Sides.Left}} },
         text = "Number+1"
     }
     function button2:charIn(char)
