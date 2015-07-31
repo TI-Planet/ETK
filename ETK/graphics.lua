@@ -82,10 +82,14 @@ do
 	--------------------------------------
 	
 	if not platform.withGC then
-		platform.withGC = function (func, ...)
-			local gc = platform.gc()
+		platform.withGC = function (f, ...)
+		    local gc = platform.gc()
 			gc:begin()
-			func(..., gc) -- BUG: if you have a parameter after ..., you will only select the first parameter from the list, <- func({...}[1], gc)
+			local args = {...}
+			args[#args+1] = gc
+			local results = { f(unpack(args)) }
+			gc:finish()
+		    return unpack(results)
 		end
 	end
 	
