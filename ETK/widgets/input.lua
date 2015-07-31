@@ -67,7 +67,7 @@ do
 			local value = tostring(self.value)
 			local text = value
 			
-			if value == "" or value == 0 then
+			if value == "" then
 				text = self.placeholder or value
 			end
 			
@@ -80,7 +80,7 @@ do
 			end
 			
 			if self.hasFocus and value ~= "" then
-				gc:fillRect(x + (text == value and strWidth + 2 or width - 4), y, 1, height)
+				gc:fillRect(x + (text == value and strWidth + 2 or width - 4), y+2, 1, height-3)
 			end
 			
 			gc:smartClipRect("restore")
@@ -95,42 +95,55 @@ do
 		end
 	
 		function Input:charIn(char)
+			if self.disabled then
+				return
+			end
+
 			local newValue = self.value .. char
 			
 			if self.number then
 				newValue = tonumber(newValue)
 			end
 			
-			if self.disabled or not newValue then
+			if not newValue then
 				return
 			end
 			
 			self.value = newValue
+
 			self:doValueChange()
-			
 			self.parent:invalidate()
 		end
 		
 		function Input:clearKey()
+			if self.disabled then
+				return
+			end
+
 			self.value = self.number and 0 or ""
 			self:doValueChange()
 			self.parent:invalidate()
 		end
 		
 		function Input:backspaceKey()
-			if not self.disabled then
-				local newValue = tostring(self.value):usub(1,-2)
-				
-				if self.number then
-					newValue = tonumber(newValue)
-				end
-				
-				if newValue then
-					self.value = newValue
-				else
-					self.value = self.number and 0 or ""
-				end
+			if self.disabled then
+				return
 			end
+
+			local newValue = tostring(self.value):usub(1,-2)
+			
+			if self.number then
+				newValue = tonumber(newValue)
+			end
+			
+			if newValue then
+				self.value = newValue
+			else
+				self.value = self.number and 0 or ""
+			end
+
+			self:doValueChange()
+			self.parent:invalidate()
 		end
 	
 	end
