@@ -145,7 +145,23 @@ do
 			self:doValueChange()
 			self.parent:invalidate()
 		end
-	
+
+		function Input:arrowUp()
+			if not self.disabled and self.number then
+				self.value++
+				self:doValueChange()
+				self.parent:invalidate() 
+			end
+		end
+
+		function Input:arrowDown()
+			if not self.disabled and self.number then
+				self.value--
+				self:doValueChange()
+				self.parent:invalidate()
+			end
+		end
+
 	end
 
 end
