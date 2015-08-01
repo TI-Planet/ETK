@@ -12,9 +12,9 @@
 
 Enum = function(enumTable)
     for k,v in ipairs(enumTable) do
-        enumTable[v] = k        
+        enumTable[v] = k
     end
-    
+
     return enumTable
 end
 
@@ -27,8 +27,8 @@ do Logger = {}
     Logger.Log = function (message, ...)
         print(message:format(...))
     end
-    
-    Logger.Warn = function (message, ...) 
+
+    Logger.Warn = function (message, ...)
         Logger.Log("Warning: " .. message, ...)
     end
 end
@@ -41,27 +41,27 @@ end
 do UnitCalculator = {}
     UnitCalculator.GetAbsoluteValue = function (value, referenceValue)
         local numberValue, unit = string.match(tostring(value), "([-%d.]+)(.*)")
-        
+
         local number = tonumber(numberValue)
-        
+
         if not number then
              Logger.Warn("UnitCalculator.GetAbsoluteValue - Invalid number value, returning 0")
              return 0
         end
-        
+
         local isPercent = unit == "%"
-        
+
         if number < 0 then
             print(number, "from")
             number = (isPercent and 100 or referenceValue) + number
             print(number, "to")
         end
-        
+
         if isPercent then
             return referenceValue / 100 * number
         else
            return number
-        end 
+        end
     end
 end
 
@@ -75,27 +75,27 @@ do Dimension = class()
         self.width = width
         self.height = height
     end
-    
+
     function Dimension:get(parentWidth, parentHeight, dirty)
         if self.width then
             if dirty or not self.cachedWidth then
                 self.cachedWidth  = UnitCalculator.GetAbsoluteValue(self.width, parentWidth)
                 self.cachedHeight = UnitCalculator.GetAbsoluteValue(self.height, parentHeight)
-            end     
-            
+            end
+
             return self.cachedWidth, self.cachedHeight
         else
             self.cachedWidth = parentWidth
             self.cachedHeight = parentHeight
-            
+
             return parentWidth, parentHeight
         end
     end
-    
+
     function Dimension:getCachedDimension()
         return self.cachedWidth or 0, self.cachedHeight or 0
     end
-    
+
     function Dimension:invalidate()
         self.cachedWidth = nil
         self.cachedHeight = nil
@@ -105,46 +105,46 @@ end
 do Position = class()
     Position.Type  = Enum { "Absolute", "Relative" }
     Position.Sides = Enum { "Left", "Right", "Top", "Bottom" }
-    
+
     function Position:init(arg)
         arg = arg or {}
-        
+
         self.left   = arg.left
         self.top    = arg.top
         self.bottom = arg.bottom
         self.right  = arg.right
-        
+
         self.alignment = arg.alignment or {}
-        
+
         if not (self.left or self.right) then
             self.left = 0
         end
-        
+
         if not (self.top or self.bottom) then
             self.top = 0
         end
     end
-    
+
     function Position:get(parentX, parentY, parentWidth, parentHeight, width, height, dirty)
-        if dirty or not self.cachedX then           
+        if dirty or not self.cachedX then
             local x, y
             local originX = parentX
             local originY = parentY
-            
+
             if self.right then
                 originX = originX + parentWidth
             end
-            
+
             if self.bottom then
                 originY = originY + parentHeight
             end
-            
+
             for _, alignment in ipairs(self.alignment) do
                 local side = alignment.side
                 local ref = alignment.ref
                 local refWidth, refHeight = ref:getDimension()
                 local refX, refY = ref:getPosition()
-                
+
                 if side == Position.Sides.Left then
                     originX = refX
                 elseif side == Position.Sides.Right then
@@ -157,35 +157,35 @@ do Position = class()
                     Logger.Warn("Invalid side specified")
                 end
             end
-            
+
             if self.left then
                 x = originX + UnitCalculator.GetAbsoluteValue(self.left, parentWidth)
             elseif self.right then
                 x = originX - UnitCalculator.GetAbsoluteValue(self.right, parentWidth) - width
             end
-                        
+
             if self.top then
                 y = originY + UnitCalculator.GetAbsoluteValue(self.top, parentHeight)
             elseif self.bottom then
                 y = originY - UnitCalculator.GetAbsoluteValue(self.bottom, parentHeight) - height
             end
-            
+
             self.cachedX = x
             self.cachedY = y
         end
-        
+
         return self.cachedX, self.cachedY
     end
-    
+
     function Position:invalidate()
         self.cachedX = nil
         self.cachedY = nil
     end
-    
+
     function Position:getCachedPosition()
         return self.cachedX or 0, self.cachedY or 0
     end
-    
+
 end
 
 
@@ -204,7 +204,7 @@ end
 
 local CallEvent = function(object, event, ...)
     local handler = object[event]
-    
+
     if handler then
         return handler, handler(object, ...)
     end

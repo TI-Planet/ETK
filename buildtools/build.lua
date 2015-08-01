@@ -9,7 +9,7 @@ print(" (C) 2015 - The ETK team,")
 print(" Jim Bauwens, Adrien 'Adriweb' Bertrand")
 print("----------------------------------------\r\n")
 
--- TODO : support optional outfile explicit support (-> same name as infile, but .tns), 
+-- TODO : support optional outfile explicit support (-> same name as infile, but .tns),
 --        as well as options (could be used to say to do some post-processing, like calling LuaSrcDiet)
 
 if #arg<2 then
@@ -43,28 +43,28 @@ end
 function processFile(filename, path)
     luafiles = luafiles + 1
     assert(luafiles <= MAX_FILES, "Too many files to include! Are you sure you don't have an include loop?")
-    
+
     local out = ""
-    
+
     local file = assert(io.open(filename, "r"), filename .. " could not be read! Aborting.")
     print("Processing " .. filename)
-    
+
     --assert(os.execute("luac -p " .. filename) == 0, filename .. " contains a syntax error! Aborting.")
-    
+
     local filecontent = file:read("*a")
     file:close()
-    
+
     if filename ~= buildfilename then
         local fileheader = "-- Start of " .. filename     .. " --\r\n"
         local hbar       = string.rep("-", #fileheader-2) .. "\r\n"
         local fileend    = "-- End of " .. filename       .. " --\r\n"
         local ebar       = string.rep("-", #fileend-2)    .. "\r\n"
-        
+
         filecontent = hbar .. fileheader .. hbar .. "\r\n" .. filecontent .. "\r\n" .. ebar .. fileend .. ebar
     end
-    
+
     out = filecontent:gsub("%-%-include \"([^\"]*)\"", function (f) local f = path .. f return processFile(f, getPath(f)) end)
-    
+
     return out
 end
 
@@ -90,7 +90,7 @@ end
 --        It could be easily done by adding the path of the included file in a table, and checking that it's not in the table before.
 function processMacros(luacode)
     luacode = luacode:gsub("%-%-define \"([^\"]*)\" \"([^\"]*)\"", addMacro)
-    
+
     print("Pre-processing macros...")
     for i, v in ipairs(macroTable) do
         local pattern, content = v[1], v[2]
@@ -110,7 +110,7 @@ function processMacros(luacode)
         -- print(i, v[1], v[2])
         luacode = luacode:gsub(v[1], v[2])
     end
-    
+
     return luacode
 end
 

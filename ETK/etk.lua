@@ -6,7 +6,7 @@ etk = {}
 
 do
     local etk = etk
-    
+
     --include "helpers.lua"
     --include "graphics.lua"
     --include "screenmanager.lua"

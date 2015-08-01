@@ -14,7 +14,7 @@ do
     local Button = etk.Widgets.Button
 
     local myView = etk.View()
-    
+
     local input1 = Input {
         position = Position { top="2px", right="2px" },
         value = 1337
@@ -25,13 +25,13 @@ do
     local input2 = Input {
         position = Position { top="4px", left="0px", alignment={{ref=input1, side=Position.Sides.Bottom},{ref=input1, side=Position.Sides.Left}} },
         value = "this is an input"
-    }   
-    
+    }
+
     local label1 = Label {
         position = Position { top="2px", right="10px", alignment={{ref=input1, side=Position.Sides.Left}} },
         text = "This is a label"
     }
-    
+
     local label2 = Label {
         position = Position { top="0px", right="10px", alignment={{ref=input2, side=Position.Sides.Top},{ref=input2, side=Position.Sides.Left}} },
         text = "This is a label"
@@ -45,17 +45,17 @@ do
     }
     button1.onAction = function ()
         local dialog = etk.Dialog("Test Dialog", Position { top="40px", left="20px" }, Dimension("-40px", "-80px"))
-        
+
         local nameLabel = Label {
             position = Position { top="30px", left="4px" },
             text = "Name: "
         }
-        
+
         local nameInput = Input {
             position = Position { top="30px", left="50px" }
         }
         nameInput.dimension.width = "-54px"
-            
+
         local closeButton = Button {
             position = Position { bottom="4px", right="4px" },
             text = "Close"
@@ -64,12 +64,12 @@ do
             input2.value = "Hi " .. nameInput.value
             etk.RootScreen:popScreen();
         end
-        
+
         dialog:addChildren(nameLabel, nameInput, closeButton)
-        
+
         etk.RootScreen:pushScreen(dialog)
     end
-    
+
     local button2 = Button {
         position = Position { bottom="2px", right="2px", alignment={{ref=button1, side=Position.Sides.Left}} },
         text = "Number+1"
@@ -79,20 +79,20 @@ do
         self.parent:invalidate()
     end
     button2.onAction = λ -> input1.value++;
-    
+
     myView:addChildren(input1, input2, label1, label2, button2, button1)
-        
+
     function myView:draw(gc, x, y, width, height)
         Logger.Log("in myView draw")
     end
-    
+
     function myView:enterKey()
         print("Enterkey myView")
     end
-    
+
     function input1:enterKey()
         print("Enterkey input1")
     end
-    
+
     etk.RootScreen:pushScreen(myView)
 end
