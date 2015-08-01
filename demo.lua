@@ -80,7 +80,7 @@ do
     end
     button2.onAction = λ -> input1.value++;
 
-    myView:addChildren(input1, input2, label1, label2, button2, button1)
+    myView:addChildren(input1, input2, label1, label2, button1, button2)
 
     function myView:draw(gc, x, y, width, height)
         Logger.Log("in myView draw")
