@@ -1,6 +1,5 @@
 ----------------------------------
--- ETK Helper Classes           --
--- make stuff more easy         --
+-- ETK Helpers / Utilities      --
 --                              --
 -- (C) 2015 Jim Bauwens         --
 -- Licensed under the GNU GPLv3 --
@@ -195,6 +194,15 @@ end
 
 local function unpackColor(col)
     return col[1] or 0, col[2] or 0, col[3] or 0
+end
+
+
+-------------
+-- Unicode --
+-------------
+
+function string.ulen(str)
+    return select(2, str:gsub("[^\128-\193]", "")) -- count the number of non-continuing bytes
 end
 
 

@@ -12,6 +12,7 @@ do
 
         Input.defaultStyle = {
             textColor       = {{000,000,000},{000,000,000}},
+            cursorColor     = {{000,000,020},{000,000,020}},
             backgroundColor = {{255,255,255},{255,255,255}},
             borderColor     = {{136,136,136},{160,160,160}},
             focusColor      = {{040,148,184},{000,000,000}},
@@ -30,13 +31,28 @@ do
         function Input:init(arg)
             self.value = arg.value or ""
             self.disabled = arg.disabled
+            self.cursorPos = tostring(self.value):ulen()
+            self.cursorX = 0
+            self.cursorDirty = true
 
             local style = arg.style or Input.defaultStyle
             self.style = style
 
             local dimension = Dimension(style.defaultWidth, style.defaultHeight)
-
             Widget.init(self, arg.position, dimension)
+        end
+
+        function Input:setValue(val)
+            if val then
+                if self.number then
+                    self.value = type(val) == "number" and val or 0
+                else
+                    self.value = tostring(val)
+                end
+            else
+                self.value = self.number and 0 or ""
+            end
+            self:doValueChange()
         end
 
         function Input:draw(gc, x, y, width, height, isColor)
@@ -73,14 +89,24 @@ do
 
             local strWidth = gc:getStringWidth(text)
 
-            if strWidth < width - 4 or not self.hasFocus then
-                gc:drawString(text, x + 2, y + 1, "top")
+            if strWidth < width - 3 or not self.hasFocus then
+                gc:drawString(text, x + 2, y, "top")
             else
-                gc:drawString(text, x - 4 + width - strWidth, y + 1, "top")
+                -- TODO: FIX POSITION WHERE strWidth>width AND self.cursorPos ISN'T AT THE END
+                gc:drawString(text, x - 3 + width - strWidth, y, "top")
             end
-
-            if self.hasFocus and value ~= "" then
-                gc:fillRect(x + (text == value and strWidth + 2 or width - 4), y+2, 1, height-3)
+            if self.hasFocus then
+                if self.cursorDirty then
+                    self.cursorX = gc:getStringWidth(value:usub(1, self.cursorPos)) + 2
+                    self.cursorDirty = false
+                end
+                gc:setColorRGB(unpackColor(style.cursorColor[color]))
+                if strWidth < width - 3 then
+                    gc:drawLine(x + self.cursorX, y+2, x + self.cursorX, y+height-2)
+                else
+                    local xx = x + self.cursorX - (strWidth - width) - 4
+                    gc:drawLine(xx, y+2, xx, y+height-2)
+                end
             end
 
             gc:smartClipRect("restore")
@@ -91,6 +117,7 @@ do
         ------------------------
 
         function Input:doValueChange()
+            self.cursorDirty = true
             CallEvent(self, "onValueChange", self.value)
         end
 
@@ -99,7 +126,13 @@ do
                 return
             end
 
-            local newValue = self.value .. char
+            local newValue = tostring(self.value)
+
+            if self.cursorPos >= 0 and self.cursorPos < newValue:ulen() then
+                newValue = newValue:usub(1, self.cursorPos) .. char .. newValue:usub(self.cursorPos+1)
+            else
+                newValue = newValue .. char
+            end
 
             if self.number then
                 newValue = tonumber(newValue)
@@ -110,6 +143,7 @@ do
             end
 
             self.value = newValue
+            self.cursorPos++
 
             self:doValueChange()
             self.parent:invalidate()
@@ -121,6 +155,8 @@ do
             end
 
             self.value = self.number and 0 or ""
+            self.cursorPos = self.number and 1 or 0
+
             self:doValueChange()
             self.parent:invalidate()
         end
@@ -130,16 +166,64 @@ do
                 return
             end
 
-            local newValue = tostring(self.value):usub(1,-2)
+            local newValue = tostring(self.value)
+
+            if self.cursorPos == 0 then
+                return
+            elseif self.cursorPos > 0 and self.cursorPos < newValue:ulen() then
+                newValue = newValue:usub(1, self.cursorPos-1) .. newValue:usub(self.cursorPos+1)
+            else
+                newValue = tostring(self.value):usub(1,-2)
+            end
 
             if self.number then
                 newValue = tonumber(newValue)
             end
 
-            if newValue then
+            if newValue and tostring(newValue):ulen() > 0 then
+                self.value = newValue
+                self.cursorPos--
+            else
+                if self.number then
+                    self.value = 0
+                    self.cursorPos = 1
+                else
+                    self.value = ""
+                    self.cursorPos = 0
+                end
+            end
+
+            self:doValueChange()
+            self.parent:invalidate()
+        end
+
+        function Input:deleteKey()
+            if self.disabled then
+                return
+            end
+
+            local newValue = tostring(self.value)
+
+            if self.cursorPos == newValue:ulen() then
+                return
+            elseif self.cursorPos >= 0 then
+                newValue = newValue:usub(1, self.cursorPos) .. newValue:usub(self.cursorPos+2)
+            end
+
+            if self.number then
+                newValue = tonumber(newValue)
+            end
+
+            if newValue and tostring(newValue):ulen() > 0 then
                 self.value = newValue
             else
-                self.value = self.number and 0 or ""
+                if self.number then
+                    self.value = 0
+                    self.cursorPos = 1
+                else
+                    self.value = ""
+                    self.cursorPos = 0
+                end
             end
 
             self:doValueChange()
@@ -158,6 +242,28 @@ do
             if not self.disabled and self.number then
                 self.value--
                 self:doValueChange()
+                self.parent:invalidate()
+            end
+        end
+
+        function Input:arrowLeft()
+            if self.disabled then
+                return
+            end
+            if self.cursorPos > 0 then
+                self.cursorPos--
+                self.cursorDirty = true
+                self.parent:invalidate()
+            end
+        end
+
+        function Input:arrowRight()
+            if self.disabled then
+                return
+            end
+            if self.cursorPos < tostring(self.value):ulen() then
+                self.cursorPos++
+                self.cursorDirty = true
                 self.parent:invalidate()
             end
         end
