@@ -17,9 +17,9 @@ do
 
     local input1 = Input {
         position = Position { top="2px", right="2px" },
-        value = 1337
+        value = 1337,
+        number = true
     }
-    input1.number = true
     input1.dimension.width = Input.defaultStyle.defaultWidth * 2
 
     local input2 = Input {
