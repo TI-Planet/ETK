@@ -34,9 +34,9 @@ do
 
     local label2 = Label {
         position = Position { top="0px", right="10px", alignment={{ref=input2, side=Position.Sides.Top},{ref=input2, side=Position.Sides.Left}} },
-        text = "This is a label"
+        text = "This is a label",
+        limit = true
     }
-    label2.limit = true
     label2.dimension = Dimension("30px","20px")
 
     local button1 = Button {

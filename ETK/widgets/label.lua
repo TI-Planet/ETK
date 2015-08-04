@@ -49,7 +49,7 @@ do
 
             local style = arg.style or Label.defaultStyle
             self.style = style
-            self.limit = false
+            self.limit = arg.limit == true
             self.ignoreFocus = true
 
             local dimension = Dimension(style.defaultWidth, style.defaultHeight)

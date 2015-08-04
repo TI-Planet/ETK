@@ -43,7 +43,7 @@ do
         end
 
         function Input:init(arg)
-            self.number = arg.number and arg.number == true
+            self.number = arg.number == true
             self:setValue(arg.value or "")
             self.disabled = arg.disabled
             self.cursorPos = tostring(self._value):ulen()
