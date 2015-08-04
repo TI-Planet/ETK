@@ -103,26 +103,27 @@ do
                 text = self.placeholder or value
             end
 
-            local strWidth = gc:getStringWidth(text)
-
-            if strWidth < width - 3 or not self.hasFocus then
-                gc:drawString(text, x + 2, y, "top")
-            else
-                -- TODO: FIX POSITION WHERE strWidth>width AND self.cursorPos ISN'T AT THE END
-                gc:drawString(text, x - 3 + width - strWidth, y, "top")
+            if self.cursorDirty then
+                self.cursorX = gc:getStringWidth(value:usub(1, self.cursorPos)) + 2
+                self.cursorDirty = false
             end
+
+            -- TODO: make 3 a constant value 
+            
+            local strWidth = gc:getStringWidth(text)
+            local xOffset = width - 3 - strWidth
+            
+            if not (xOffset < 0 and self.hasFocus) then
+                xOffset = 0
+            elseif self.cursorX < -xOffset then
+                xOffset = -self.cursorX + 3
+            end
+            
+            gc:drawString(text, x + xOffset + 2, y, "top")
+            
             if self.hasFocus then
-                if self.cursorDirty then
-                    self.cursorX = gc:getStringWidth(value:usub(1, self.cursorPos)) + 2
-                    self.cursorDirty = false
-                end
                 gc:setColorRGB(unpackColor(style.cursorColor[color]))
-                if strWidth < width - 3 then
-                    gc:drawLine(x + self.cursorX, y+2, x + self.cursorX, y+height-2)
-                else
-                    local xx = x + self.cursorX - (strWidth - width) - 4
-                    gc:drawLine(xx, y+2, xx, y+height-2)
-                end
+                gc:drawLine(x + self.cursorX + xOffset, y+2, x + self.cursorX + xOffset, y+height-2)
             end
 
             gc:smartClipRect("restore")
