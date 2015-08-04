@@ -28,10 +28,25 @@ do
                 }
         }
 
+        local prev__index = Input.__index
+        function Input:__index(idx)
+            return idx == "value" and self._value or prev__index(self, idx)
+        end
+
+        function Input:__newindex(idx, val)
+            if idx == "value" then
+                self:setValue(val)
+                self.parent:invalidate()
+            else
+                rawset(self, idx, val)
+            end
+        end
+
         function Input:init(arg)
-            self.value = arg.value or ""
+            self.number = arg.number and arg.number == true
+            self:setValue(arg.value or "")
             self.disabled = arg.disabled
-            self.cursorPos = tostring(self.value):ulen()
+            self.cursorPos = tostring(self._value):ulen()
             self.cursorX = 0
             self.cursorDirty = true
 
@@ -45,13 +60,14 @@ do
         function Input:setValue(val)
             if val then
                 if self.number then
-                    self.value = type(val) == "number" and val or 0
+                    self._value = type(val) == "number" and val or 0
                 else
-                    self.value = tostring(val)
+                    self._value = tostring(val)
                 end
             else
-                self.value = self.number and 0 or ""
+                self._value = self.number and 0 or ""
             end
+            self.cursorPos = tostring(self._value):ulen()
             self:doValueChange()
         end
 
@@ -76,11 +92,11 @@ do
 
             gc:smartClipRect("subset", x, y, width, height)
 
-            if self.disabled or self.value == "" then
+            if self.disabled or self._value == "" then
                 gc:setColorRGB(unpackColor(style.focusColor[color]))
             end
 
-            local value = tostring(self.value)
+            local value = tostring(self._value)
             local text = value
 
             if value == "" then
@@ -118,7 +134,7 @@ do
 
         function Input:doValueChange()
             self.cursorDirty = true
-            CallEvent(self, "onValueChange", self.value)
+            CallEvent(self, "onValueChange", self._value)
         end
 
         function Input:charIn(char)
@@ -126,7 +142,7 @@ do
                 return
             end
 
-            local newValue = tostring(self.value)
+            local newValue = tostring(self._value)
 
             if self.cursorPos >= 0 and self.cursorPos < newValue:ulen() then
                 newValue = newValue:usub(1, self.cursorPos) .. char .. newValue:usub(self.cursorPos+1)
@@ -142,7 +158,7 @@ do
                 return
             end
 
-            self.value = newValue
+            self._value = newValue
             self.cursorPos++
 
             self:doValueChange()
@@ -154,7 +170,7 @@ do
                 return
             end
 
-            self.value = self.number and 0 or ""
+            self._value = self.number and 0 or ""
             self.cursorPos = self.number and 1 or 0
 
             self:doValueChange()
@@ -166,14 +182,14 @@ do
                 return
             end
 
-            local newValue = tostring(self.value)
+            local newValue = tostring(self._value)
 
             if self.cursorPos == 0 then
                 return
             elseif self.cursorPos > 0 and self.cursorPos < newValue:ulen() then
                 newValue = newValue:usub(1, self.cursorPos-1) .. newValue:usub(self.cursorPos+1)
             else
-                newValue = tostring(self.value):usub(1,-2)
+                newValue = tostring(self._value):usub(1,-2)
             end
 
             if self.number then
@@ -181,14 +197,14 @@ do
             end
 
             if newValue and tostring(newValue):ulen() > 0 then
-                self.value = newValue
+                self._value = newValue
                 self.cursorPos--
             else
                 if self.number then
-                    self.value = 0
+                    self._value = 0
                     self.cursorPos = 1
                 else
-                    self.value = ""
+                    self._value = ""
                     self.cursorPos = 0
                 end
             end
@@ -202,7 +218,7 @@ do
                 return
             end
 
-            local newValue = tostring(self.value)
+            local newValue = tostring(self._value)
 
             if self.cursorPos == newValue:ulen() then
                 return
@@ -215,13 +231,13 @@ do
             end
 
             if newValue and tostring(newValue):ulen() > 0 then
-                self.value = newValue
+                self._value = newValue
             else
                 if self.number then
-                    self.value = 0
+                    self._value = 0
                     self.cursorPos = 1
                 else
-                    self.value = ""
+                    self._value = ""
                     self.cursorPos = 0
                 end
             end
@@ -232,7 +248,7 @@ do
 
         function Input:arrowUp()
             if not self.disabled and self.number then
-                self.value++
+                self._value++
                 self:doValueChange()
                 self.parent:invalidate()
             end
@@ -240,7 +256,7 @@ do
 
         function Input:arrowDown()
             if not self.disabled and self.number then
-                self.value--
+                self._value--
                 self:doValueChange()
                 self.parent:invalidate()
             end
@@ -261,7 +277,7 @@ do
             if self.disabled then
                 return
             end
-            if self.cursorPos < tostring(self.value):ulen() then
+            if self.cursorPos < tostring(self._value):ulen() then
                 self.cursorPos++
                 self.cursorDirty = true
                 self.parent:invalidate()
