@@ -108,19 +108,19 @@ do
                 self.cursorDirty = false
             end
 
-            -- TODO: make 3 a constant value 
-            
+            -- TODO: make 3 a constant value
+
             local strWidth = gc:getStringWidth(text)
             local xOffset = width - 3 - strWidth
-            
+
             if not (xOffset < 0 and self.hasFocus) then
                 xOffset = 0
             elseif self.cursorX < -xOffset then
                 xOffset = -self.cursorX + 3
             end
-            
+
             gc:drawString(text, x + xOffset + 2, y, "top")
-            
+
             if self.hasFocus then
                 gc:setColorRGB(unpackColor(style.cursorColor[color]))
                 gc:drawLine(x + self.cursorX + xOffset, y+2, x + self.cursorX + xOffset, y+height-2)

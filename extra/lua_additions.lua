@@ -1,4 +1,4 @@
--- The following defines/macros are supposed to be used for simple cases only 
+-- The following defines/macros are supposed to be used for simple cases only
 -- (within simple syntax constructs that wouldn't confuse the "parser". See examples.)
 
 --Lua variable pattern
